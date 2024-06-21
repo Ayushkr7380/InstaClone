@@ -1,0 +1,63 @@
+body{
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    background-color: rgb(222, 222, 222);
+}
+#insta-logo{
+    margin: auto;
+    
+    width: 400px;
+    display: flex;
+    align-items: center;
+    background-color: whitesmoke;
+}
+#insta-logo p{
+    font-weight: 700;
+    margin-left: 15px;
+    font-size: 20px;
+}
+#commentbody{
+    background-color: white;
+    display: flex;
+    /* justify-content: center; */
+    flex-direction: column;
+    width: 400px;
+    margin: auto;
+    min-height: 90vh;
+}
+#commentbox{
+    position: sticky;
+    bottom: 0;
+    padding: 2vh 0vw;
+    display: flex;
+    background-color: whitesmoke;
+    justify-content: space-around;
+    width: 400px;
+    margin: auto;
+}
+#commentbox input{
+    /* width: 300px; */
+    border-radius: 7px;
+    border: none;
+    /* background-color: red; */
+    margin-right: 1vw;
+    outline: none;
+    font-size: 17px;
+    padding: 1vh 1vw;
+}
+#commentbox button{
+    background-color: rgb(41, 92, 187);
+    color: white;
+    cursor: pointer;
+    border-radius: 7px;
+    outline: none;
+    font-size: 16px;
+    border: none;
+    padding: 1vh 1vw;
+    margin: 1vh 0vw;
+    margin-left: 3vw;
+}
+.commentdata{
+    margin: 15px;
+}

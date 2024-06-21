@@ -1,0 +1,32 @@
+body{
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    background-color: rgb(222, 222, 222);
+}
+#insta-logo{
+    margin: auto;
+    
+    width: 400px;
+    display: flex;
+    align-items: center;
+    background-color: whitesmoke;
+}
+#insta-logo p{
+    font-weight: 700;
+    margin-left: 15px;
+    font-size: 20px;
+}
+#likebody{
+    background-color: white;
+    display: flex;
+    /* justify-content: center; */
+    flex-direction: column;
+    width: 400px;
+    margin: auto;
+    min-height: 90vh;
+}
+
+.likedata{
+    margin: 15px;
+}
