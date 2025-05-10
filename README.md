@@ -1,6 +1,6 @@
 # InstaClone
 
-InstaClone is a full-stack Instagram-like web application built using Node.js, Express, MongoDB, and EJS. Users can register, log in, upload photos, like and comment on posts, view others’ profiles, and update their own profiles. All routes are protected with middleware to ensure secure access.
+InstaClone is a full-stack Instagram-like social media web application built using Node.js, Express, MongoDB, and EJS. Users can register, log in, update their profile, upload posts with captions and images, view other users’ profiles, like and comment on posts, and explore a dynamic home feed. The app handles file uploads using Multer and stores them on Cloudinary. Authentication is secured with JWT and cookie sessions, while validation is handled via custom middleware. The UI is designed using EJS templates and styled with CSS and JavaScript.
 
 ---
 
