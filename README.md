@@ -23,6 +23,7 @@ Middleware-based Route Protection and Validation
 EJS Templates for Frontend Views
 ```
 
+
 ---
 
 ## Tech Stack
