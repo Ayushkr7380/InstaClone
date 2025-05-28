@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Profile</title>
+    <link rel="stylesheet" href="../static/css/userdetails.css">
+    
+</head>
+<body>
+    
+        <div id="insta-logo">
+            <p>@<%= user.username%></p>     
+        </div>
+        <div id="userdata">
+            
+            <div>
+                
+                <img src="<%= user.profile && user.profile.secure_url ? user.profile.secure_url : '../static/dp.jpg' %>" alt="dp" height="100px" width="100px" id="userprofile">
+                <p id="username" style="font-weight: 600; margin-top: 0;"><%= user.name %></p>
+                <span style="text-align: left;color: rgb(140, 140, 141);font-style: italic;"><%= user.bio %></span>
+            </div>
+            
+            <div id="editprofile">
+                <form id="editprofileform">
+                    <label for="name">Name</label>
+                    <input type="text" name="name" id="name" value="<%= user.name%>">
+                    <label for="bio">Bio</label>
+                    <input type="text" name="bio" id="bio" value="<%= user.bio%>">
+                    <label for="profilephoto">Update profile photo</label>
+                    <input type="file" name="profilephoto" id="profilephotoedit">
+                    <button type="submit" id="updateprofilebutton">Update</button>
+                </form>
+                <!-- loading bar -->
+                <div  id="profileloadingbar" style="display: none;">
+                    <i class="fa-solid fa-spinner fa-spin"></i>
+                </div>
+                <p id="editprofilestatus"></p>
+                <button id="cancelprofileedit">Cancel</button>
+            </div>
+        </div>
+        
+        <div id="userpost">        
+            <span id="underline"></span>
+            <p id="yourpost">Your Posts</p>
+            <div id="postdata">
+                <div>
+                    <% if (post && post.length > 0) { %>
+                        <% post.forEach(p => { %>
+                            <a href="/viewpost/<%= p._id %>">
+                                <div class="mainpost">
+                                    <span>
+                                        <img src="<%= p.photo.secure_url %>" height="160px" width="160px">
+                                    </span>
+                                    <br>
+                                    
+                                </div>
+                            </a>
+                        <% }); %>
+                    <% } else { %>
+                        <span>No posts available</span>
+                    <% } %>
+                </div>
+            </div>
+            <div id="createpostbody">
+                <form id="createpost">
+                    <span>Select Photo : <input type="file" name="photo" id="photo"></span>                    
+                    <span>Caption : <input type="text" name="caption" id="caption"></span>                   
+                    <button type="submit">Post</button>
+                                      
+                </form>
+                <!-- loading bar -->
+                <div  id="postloadingbar" style="display: none;">
+                    <i class="fa-solid fa-spinner fa-spin"></i>
+                </div>
+
+                <button id="discardpost">Discard</button>
+                <div id="createpoststatus"></div>
+        </div>
+            
+        </div>
+        
+         
+        
+        <div id="createandlogoutbody">
+                <div>
+                    
+                    <span id="underline"></span>
+                </div>
+                <div id="createandlogout">
+                    <a href="/home" style="color:black;"><i class="fa-solid fa-house"></i></a>
+                    <i class="fa-regular fa-square-plus" id="createpostbutton"></i>
+                    <button id="logout">Logout</button>
+                    <div id="logoutstatus" class="error"></div>
+                </div>
+            
+        </div>
+    
+    <script src="https://kit.fontawesome.com/eff65daa71.js" crossorigin="anonymous"></script>
+    
+    <script>
+
+        
+        //Logout API 
+        
+        const logout = document.getElementById('logout');
+        const logoutstatus = document.getElementById('logoutstatus');
+        
+        logout.addEventListener('click',()=>{
+            fetch('/auth/logout',{
+                method:'GET',
+                headers:{
+                    'Content-Type' : 'application/json'
+                }
+                })
+                .then(response=>{
+                    if(!response.ok){
+                        throw new Error('Logout Failed');
+                    }
+                    return response.json();
+                })
+                .then(data=>{
+                    window.location.href = '/auth/login'
+                })
+                .catch(e=>{
+                    logoutstatus.textContent = 'Logout Failed!!'
+                });
+        });
+        
+        
+        //CreatePost API
+        
+        const createpost = document.getElementById('createpost');
+        const createpoststatus = document.getElementById('createpoststatus');
+        
+        const postloadingbar = document.getElementById('postloadingbar');
+        
+        
+        createpost.addEventListener('submit',(e)=>{
+            e.preventDefault();
+            
+            const formData = new FormData(createpost);
+                
+                postloadingbar.style.display='block';
+                
+                fetch('/post',{
+                    method : 'POST',
+                body: formData
+            })
+            .then(response=>{
+                if(!response.ok){
+                    return response.json().then(e=>{
+                        throw new Error(e.message)
+                    })
+                }
+                
+            })
+            .then(data=>{
+                createpoststatus.textContent = 'Post Created Successfully'
+                createpost.reset();
+                postloadingbar.style.display='none';
+                window.location.href = '/auth/getuser'
+            })
+            .catch(e=>{
+                createpoststatus.textContent = e.message;
+                postloadingbar.style.display='none';
+            });
+        });
+
+        const createpostbutton = document.getElementById('createpostbutton');
+        const createpostbody = document.getElementById('createpostbody');
+        const discardpost = document.getElementById('discardpost');
+        createpostbutton.addEventListener('click',()=>{
+            createpostbody.style.display = 'flex';
+            createpostbody.style.flexDirection = 'column';
+            
+            createpostbutton.style.display = 'none';
+        });
+        discardpost.addEventListener('click',()=>{
+            createpostbody.style.display = 'none';
+            createpostbutton.style.display = 'block';
+        })
+        
+        //Update Profile API
+
+        const username = document.getElementById('username')
+        const userprofile = document.getElementById('userprofile')
+        const cancelprofileedit = document.getElementById('cancelprofileedit')
+        const editprofile = document.getElementById('editprofile')
+        
+        let clicked = 0;
+        username.addEventListener('click',()=>{
+            if(clicked === 0 ){
+                editprofile.style.visibility = 'visible'
+                clicked = 1;
+            }
+            else{
+                editprofile.style.visibility = 'hidden'
+                clicked = 0;
+            }
+        });
+        cancelprofileedit.addEventListener('click',()=>{
+            editprofile.style.visibility = 'hidden'
+        });
+        
+        const profileloadingbar = document.getElementById('profileloadingbar');
+
+        const editprofileform = document.getElementById('editprofileform');
+        const editprofilestatus = document.getElementById('editprofilestatus');
+        editprofileform.addEventListener('submit',(e)=>{
+            e.preventDefault();
+
+            const formdata = new FormData(editprofileform);
+
+            profileloadingbar.style.display='block';
+
+            fetch('/auth/updateprofile',{
+                method:'POST',
+                body:formdata
+            })
+            .then(response=>{
+                if(!response.ok){
+                    return response.json().then(e=>{
+                        throw new Error(e.message);
+                    })
+                }
+            })
+            .then(data=>{
+                profileloadingbar.style.display='none';
+                window.location.href = '/auth/getuser'
+            })
+            .catch(e=>{
+                profileloadingbar.style.display='none';
+                editprofilestatus.textContent = e.message;
+            });
+        });
+
+    </script>
+</body>
+</html>

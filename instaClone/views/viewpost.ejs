@@ -1,0 +1,358 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Post</title>
+    <link rel="stylesheet" href="../static/css/viewpost.css">
+    
+</head>
+<body>
+    <div id="viewpost">
+        <div id="insta-logo">
+            <img id='logo' src="../static/Insta-logo.png">     
+        </div> 
+        <div id="userdata">
+            <img src="<%= post.user.profile && post.user.profile.secure_url ? post.user.profile.secure_url : '../static/dp.jpg' %>" alt="dp" height="180px" width="180px" id="userprofile">
+            
+                <h2><%= post.user.username %></h2>
+            
+        </div>
+        <div id="mainpost">
+            <span id="underline"></span>
+            <div id="postcard">
+
+                <div id="mainposttop">
+                    <p><img src="<%= post.user.profile && post.user.profile.secure_url ? post.user.profile.secure_url : '../static/dp.jpg' %>" alt="dp" height="30px" width="30px" id="userprofile"><span><%= post.user.username %></span></p>
+                    <span id="threedot"><i class="fa-solid fa-ellipsis-vertical"></i></span>
+                </div>
+                <div id="mainpostfetched">
+                    <img src="<%= post.photo.secure_url %>" height="250px" width="250px">
+                    <div id="likeandcomment">
+                        <% 
+                            let userLiked = false;
+                            if (likes && likes.length > 0)
+                            {
+                                userLiked = likes.some(like => like.user.toString() === user._id.toString() && like.post.toString() === post._id.toString());
+                            } 
+                        %>
+
+                        <i class="<%= userLiked ? 'fa-solid liked' : 'fa-regular' %> fa-heart " data-like="<%= post._id %>" id="likebutton"></i>
+
+                        <a href="/comment/<%= post._id %>" style="color:black;"><i class="fa-regular fa-comment"></i></a>
+                        <i class="fa-regular fa-paper-plane"></i>
+                        <span style="display: block; font-size: 15px; margin-left: 9px; margin-top: 8px; color: rgb(165, 167, 168);">
+                            <% if (post.comments && post.comments.length > 0) { %>
+                                View all <%= post.comments.length %> comments
+                            <% } else { %>
+                                No comments available
+                            <% } %>
+                        </span>
+
+                        <a href="/alllikes/<%= post._id %>" style="color: black; text-decoration: none; cursor: pointer;"><p>&nbsp;<span id="likecount"><%= post.likes.length %></span><span>&nbsp;likes</span></p></a>
+                    </div>
+                    <p id="caption"><span id="captionusername"><%= post.user.username %></span><%= post.caption %></p>
+
+                    <!-- important for deletepost -->
+                     <p id="importantfordeletepost">
+                        <%= post._id%>
+                     </p>
+                </div>
+            </div>
+            <% if (user.username === post.user.username) { %>
+                <div id="editpostformbody">
+                    <form id="editpostform">
+                        <input type="text" value="<%= post.caption %>" name="newCaption" placeholder="Write caption">
+                        <button type="submit" id="editpostformbutton">Save</button>
+                    </form>
+                    <p id="editpoststatus"></p>
+                </div>
+                <div id="editanddeletebody">
+                    <div style="margin-top: 50px;">
+
+                        <button id="editpost">Edit</button>
+                        <button id="deletepost">Delete</button>
+                    </div>
+                    
+                    <div style="margin-top: 20px;">
+                         <!-- loading bar -->
+
+                         <div  id="editloadingbar" style="display: none;">
+                             <i class="fa-solid fa-spinner fa-spin"></i>
+                            </div>
+                            
+                            <!-- loading bar -->
+                            <div  id="deleteloadingbar" style="display: none;">
+                                <i class="fa-solid fa-spinner fa-spin"></i>
+                            </div>
+                    </div>
+
+                    <p id="deletepoststatus"></p>
+                </div>
+            <% } %>
+            <div id="createpostbody">
+                <form id="createpost">
+                    <span>Select Photo : <input type="file" name="photo" id="photo"></span>                    
+                    <span>Caption : <input type="text" name="caption" id="createcaption"></span>                   
+                    <button type="submit">Post</button>                   
+                </form>
+                <!-- loading bar -->
+                <div  id="postloadingbar" style="display: none;">
+                    <i class="fa-solid fa-spinner fa-spin"></i>
+                </div>
+                <button id="discardpost">Discard</button>
+                <div id="createpoststatus"></div>
+            </div>
+        </div>
+        <div id="bottom">
+            <div id="bottombuttons">
+                <a href="/home"><i class="fa-solid fa-house"></i></a>
+                <i class="fa-regular fa-square-plus" id="createpostbutton"></i>
+                <a href="/auth/getuser"><img src="<%= user.profile && user.profile.secure_url ? user.profile.secure_url : '../static/dp.jpg' %>" alt="dp" height="30px" width="30px" id="userprofile"></a>
+                <p style="display: none;" id="userid"><%=user._id%></p>
+            </div>
+        </div> 
+        
+    </div>
+
+
+    <script src="https://kit.fontawesome.com/eff65daa71.js" crossorigin="anonymous"></script>
+    
+    <script>
+
+
+
+        //Like API
+
+        
+        let countlike = JSON.parse(localStorage.getItem('countlike')) || {};
+        
+        
+        
+        const likebutton = document.getElementById('likebutton');
+        const userid = document.getElementById('userid');
+        const likecount = document.getElementById('likecount');
+        let totalCount = parseInt(likecount.textContent,10);
+        
+        likebutton.addEventListener('click',()=>{
+                
+                const currentpostId = likebutton.getAttribute('data-like');
+                console.log('current Post Id : ',currentpostId);
+
+
+                console.log('type of count is ',typeof(totalCount));
+                console.log('Total Like of',currentpostId,' is ',totalCount)
+
+                fetch('/like',{
+                    method:'POST',
+                    headers : {
+                        'Content-Type':'application/json'
+                    },
+                    body:JSON.stringify({postId:currentpostId})
+                })
+                .then(response=>{
+                    if(!response.ok){
+                        return response.json().then(e=>{
+                            throw new Error(e.message)
+                        })
+                    }
+                    return response.json()
+                })
+                .then(data=>{
+                    // Initialize countlike[currentpostId] if it doesn't exist
+                    if (!countlike[currentpostId]) {
+                        countlike[currentpostId] = {};
+                    }
+                
+                    if (countlike[currentpostId][userid.textContent]) {
+                        // User has already liked, so dislike
+                        countlike[currentpostId][userid.textContent] = false;
+                        totalCount--;
+                        console.log('Disliked successfully..!!');
+                        likebutton.classList.remove('fa-solid');
+                        likebutton.classList.add('fa-regular');
+                        likebutton.classList.remove('liked');
+                    } else {
+                        // User is liking the post
+                        countlike[currentpostId][userid.textContent] = true;
+                        totalCount++;
+                        console.log('Liked successfully..!!');
+                        likebutton.classList.remove('fa-regular');
+                        likebutton.classList.add('fa-solid');
+                        likebutton.classList.add('liked');
+                    }
+
+                    // Update totalCount in UI
+                    likecount.textContent = totalCount;
+
+                    // Update countlike in localStorage
+                    localStorage.setItem('countlike', JSON.stringify(countlike));
+
+                    
+                })
+                .catch(e=>{
+                    console.log(e.message)
+                });
+            })
+        
+       
+
+        //CreatePost API
+        
+        const postloadingbar = document.getElementById('postloadingbar');
+
+        const createpost = document.getElementById('createpost');
+        const createpoststatus = document.getElementById('createpoststatus');
+        createpost.addEventListener('submit',(e)=>{
+            e.preventDefault();
+
+            const formData = new FormData(createpost);
+
+            postloadingbar.style.display = 'block'
+            fetch('/post',{
+                method : 'POST',
+                body: formData
+            })
+            .then(response=>{
+                if(!response.ok){
+                    return response.json().then(e=>{
+                        throw new Error(e.message)
+                    })
+                }
+                
+            })
+            .then(data=>{
+                createpoststatus.textContent = 'Post Created Successfully'
+                createpost.reset();
+                postloadingbar.style.display = 'none'
+                window.location.href = '/auth/getuser'
+            })
+            .catch(e=>{
+                postloadingbar.style.display = 'none'
+                createpoststatus.textContent = e.message;
+            });
+        });
+
+        const createpostbutton = document.getElementById('createpostbutton');
+        const createpostbody = document.getElementById('createpostbody');
+        const discardpost = document.getElementById('discardpost');
+        createpostbutton.addEventListener('click',()=>{
+            createpostbody.style.display = 'flex';
+            createpostbody.style.flexDirection = 'column';
+
+            createpostbutton.style.display = 'none';
+        });
+        discardpost.addEventListener('click',()=>{
+            createpostbody.style.display = 'none';
+            createpostbutton.style.display = 'block';
+        })
+
+
+        //Edit and Delete Buttons popup
+
+        const threedot = document.getElementById('threedot');
+        const editanddeletebody = document.getElementById('editanddeletebody');
+        let i = 1;
+        threedot.addEventListener('click',()=>{
+            if(i==1){
+                editanddeletebody.style.display = 'flex'
+                i = 0;
+            }
+            else{
+                editanddeletebody.style.display = 'none'
+                i = 1;
+            }
+        });
+
+
+        //Delete API
+
+
+        const deleteloadingbar = document.getElementById('deleteloadingbar');
+
+        const deletepost = document.getElementById('deletepost');
+        const deletepoststatus = document.getElementById('deletepoststatus');
+        const importantfordeletepost = document.getElementById('importantfordeletepost');
+        const postid = importantfordeletepost.textContent.trim();
+        console.log(postid)
+        deletepost.addEventListener('click',()=>{
+
+            deleteloadingbar.style.display = 'block'
+
+            fetch(`/postdelete/${postid}`,{
+                method:'GET',
+                headers:{
+                    'Content-Type':'application/json'
+                }
+            })
+            .then(response=>{
+                if(!response.ok){
+                    return response.json().then(e=>{
+                        throw new Error(e.message);
+                    })
+                }
+            })
+            .then(data=>{
+                deleteloadingbar.style.display = 'none'
+                window.location.href = '/auth/getuser';
+            })
+            .catch(e=>{
+                deleteloadingbar.style.display = 'none'
+                deletepoststatus.textContent = e.message;
+            })
+        });
+
+        //Edit API 
+
+        const editloadingbar = document.getElementById('editloadingbar');
+
+        const editpost = document.getElementById('editpost');
+        const editpostformbody = document.getElementById('editpostformbody');
+        const editpostform = document.getElementById('editpostform');
+        const editpoststatus = document.getElementById('editpoststatus');
+
+        editpost.addEventListener('click',()=>{
+            editpostformbody.style.display = 'block'
+            editanddeletebody.style.display = 'none'
+        }); 
+
+        editpostform.addEventListener('submit',(e)=>{
+            e.preventDefault();
+
+            const formdata = new FormData(editpostform);
+
+            const editData = {
+                newCaption : formdata.get('newCaption')
+            }
+
+            editloadingbar.style.display = 'block'
+
+            fetch(`/postedit/${postid}`,{
+                method:'POST',
+                headers:{
+                    'Content-Type':'application/json'
+                },
+                body:JSON.stringify(editData)                   
+            })
+            .then(response=>{
+                if(!response.ok){
+                    return response.json().then(e=>{
+                        throw new Error(e.message);
+                    })
+                }
+            })
+            .then(data=>{
+                editloadingbar.style.display = 'none'
+                window.location.href = `/viewpost/${postid}`
+            })
+            .catch(e=>{
+                editloadingbar.style.display = 'none'
+                editpoststatus.textContent = e.message;
+            })
+        });
+
+
+         
+    </script>
+</body>
+</html>
