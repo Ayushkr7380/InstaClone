@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Comments</title>
+    <link rel="stylesheet" href="../static/css/comments.css">
+    
+</head>
+<body>
+    <div id="insta-logo">
+        <p><a href="/home" style="color: black; margin-right: 10px;"><i class="fa-solid fa-arrow-left"></a></i>@<%= user.username%></p>
+
+        <!-- PostId for comment -->
+        <p style="display: none;" id="postid"><%=post._id%></p>    
+    </div>
+    <div id="commentbody">
+        <h4 style="text-align: center;">Comments</h4>
+        <div id="comments">
+
+            <% if (comment && comment.length > 0 ) { %>
+                <% comment.forEach(c => { %>
+                    
+                    <div class="commentdata">
+                        <span style="display: flex;">
+                            <img src="<%=c.user.profile.secure_url%>" alt="profilepic" style="border-radius: 50%; height: 30px; width: 30px;">
+                            <span style="display: flex; flex-direction: column;">
+                                <span style="font-size: 17px; font-weight: 600;margin-left: 8px;"><%=c.user.username%></span>
+                                <span style="margin-left: 8px;"><%=c.text%></span>
+                            </span>
+                        </span>
+                    </div>
+                    <% }); %>
+                    <% } else { %>
+                        <span style="display: flex;justify-content: center;">No Comments available</span>
+                        <% } %>
+        </div>
+    </div>
+    <div id="commentbox">
+        <form id="commentboxform">
+            <input type="text" name="comment" id="comment">
+            <button type="submit">Post</button>
+        </form>
+    </div>
+
+
+
+    <script src="https://kit.fontawesome.com/eff65daa71.js" crossorigin="anonymous"></script> 
+    
+     
+
+    <script>
+        const postid = document.getElementById('postid');
+
+        console.log('Post id is ',postid.textContent)
+
+        const commentboxform = document.getElementById('commentboxform');
+        commentboxform.addEventListener('submit',(e)=>{
+            e.preventDefault();
+
+            const formdata = new FormData(commentboxform);
+
+            const commentData = {
+                text : formdata.get('comment'),
+                postid : postid.textContent.trim()
+            }
+
+            fetch('/comment',{
+                method:'POST',
+                headers:{
+                    'Content-Type':'application/json'
+                },
+                body:JSON.stringify(commentData)
+            })
+            .then(response=>{
+                if(!response.ok){
+                    return response.json().then(e=>{
+                        throw new Error(e.message)
+                    })
+                }
+                return response.json()
+            })
+            .then(data=>{
+                console.log('comment successful..')
+                commentboxform.reset();
+                location.reload();
+            })
+            .catch(e=>{
+                console.log(e.message)
+            })
+        });
+    </script>
+</body>
+</html>

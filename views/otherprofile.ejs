@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Otherprofile</title>
+    <link rel="stylesheet" href="../static/css/otherprofile.css">
+    
+</head>
+<body>
+    <div id="otherprofilebody">
+        <div id="insta-logo">
+            <% if (post.length > 0) { %>
+                <p>@<%= post[0].user.username %></p>
+            <% } %>     
+        </div> 
+        <div id="userdata">
+            <img src="<%= post[0].user.profile && post[0].user.profile.secure_url ? post[0].user.profile.secure_url : '../static/dp.jpg' %>" alt="dp" height="180px" width="180px" id="userprofile">
+            <% if (post.length > 0) { %>
+                <h2><%= post[0].user.name %></h2>
+                <span style="text-align: center;margin-bottom: 5px;color: rgb(140, 140, 141);font-style: italic;"><%= post[0].user.bio %></span>
+            <% } %>
+        </div>
+        <div id="userpost">        
+            <span id="underline"></span>
+            <p id="yourpost">Posts</p>
+            <div id="postdata">
+                <div>
+                    <% if (post && post.length > 0) { %>
+                        <% post.forEach(p => { %>
+                            <a href="/viewpost/<%= p._id %>">
+                                <div class="mainpost">
+                                    <span>
+                                        <img src="<%= p.photo.secure_url %>" height="160px" width="160px">
+                                    </span>    
+                                </div>
+                            </a>
+                        <% }); %>
+                    <% } else { %>
+                        <span>No posts available</span>
+                    <% } %>
+                </div>
+            </div>
+            <div id="createpostbody">
+                <form id="createpost">
+                    <span>Select Photo : <input type="file" name="photo" id="photo"></span>                    
+                    <span>Caption : <input type="text" name="caption" id="caption"></span>                   
+                    <button type="submit">Post</button>                   
+                </form>
+                <!-- loading bar -->
+                <div  id="postloadingbar" style="display: none;">
+                    <i class="fa-solid fa-spinner fa-spin"></i>
+                </div>
+                <button id="discardpost">Discard</button>
+                <div id="createpoststatus"></div>
+            </div>
+            
+        </div>
+        
+         
+        
+        <div id="createandlogoutbody">
+                <div id="createandlogout">
+                    <a href="/home" style="color:black;"><i class="fa-solid fa-house"></i></a>
+                    <i class="fa-regular fa-square-plus" id="createpostbutton"></i>
+                    <a href="/auth/getuser"><img src="<%= user.profile && user.profile.secure_url ? user.profile.secure_url : '../static/dp.jpg' %>" alt="dp" height="30px" width="30px" id="userprofile"></a>
+                </div>   
+        </div>
+    </div>
+
+
+    <script src="https://kit.fontawesome.com/eff65daa71.js" crossorigin="anonymous"></script>
+    
+    <script>
+        //CreatePost API
+        
+        const postloadingbar = document.getElementById('postloadingbar');
+
+        const createpost = document.getElementById('createpost');
+        const createpoststatus = document.getElementById('createpoststatus');
+        createpost.addEventListener('submit',(e)=>{
+            e.preventDefault();
+
+            const formData = new FormData(createpost);
+
+            // const postData = {
+            //     photo:formData.get('photo'),
+            //     caption : formData.get('caption')
+                
+            // }
+            postloadingbar.style.display = 'block'
+            fetch('/post',{
+                method : 'POST',
+                // headers :{
+                //     'Content-Type' : 'application/json'
+                // },
+                // body : JSON.stringify(postData)
+                body: formData
+            })
+            .then(response=>{
+                if(!response.ok){
+                    return response.json().then(e=>{
+                        throw new Error(e.message)
+                    })
+                }
+                
+            })
+            .then(data=>{
+                createpoststatus.textContent = 'Post Created Successfully'
+                createpost.reset();
+                postloadingbar.style.display = 'none'
+                window.location.href = '/auth/getuser'
+            })
+            .catch(e=>{
+                postloadingbar.style.display = 'none'
+                createpoststatus.textContent = e.message;
+            });
+        });
+
+        const createpostbutton = document.getElementById('createpostbutton');
+        const createpostbody = document.getElementById('createpostbody');
+        const discardpost = document.getElementById('discardpost');
+        createpostbutton.addEventListener('click',()=>{
+            createpostbody.style.display = 'flex';
+            createpostbody.style.flexDirection = 'column';
+
+            createpostbutton.style.display = 'none';
+        });
+        discardpost.addEventListener('click',()=>{
+            createpostbody.style.display = 'none';
+            createpostbutton.style.display = 'block';
+        })
+
+    </script>
+</body>
+</html>

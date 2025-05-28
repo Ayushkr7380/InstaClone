@@ -1,0 +1,166 @@
+body{
+    box-sizing: border-box;
+   margin: 0;
+   padding: 0;
+   background-color: rgb(222, 222, 222);
+   height: 100vh;
+}
+#insta-logo{
+    margin: auto;
+    height: 7vh;
+    width: 400px;
+    background-color: whitesmoke;
+    display: flex;
+    align-items: center;
+    /* align-content: center; */
+}
+#insta-logo p{
+
+    margin: 0 10px;
+    font-weight: 700;
+}
+ #userdata{
+    background-color: white;
+    display: grid;
+    justify-content: center;
+    flex-direction: column;
+    width: 400px;
+    
+    margin: auto;
+    margin-bottom: 0px;
+    
+}
+#userdata img{
+    margin-top: 3vh;
+    border-radius: 50%;
+}
+#userdata h2{
+    text-align: center;
+}
+#userpost{
+    background-color: rgb(255, 255, 255);
+    display: grid;
+    justify-content: center;
+    flex-direction: column;
+    width: 400px;
+    margin: auto;
+    
+    padding-bottom: 60px;
+}
+#yourpost{
+    text-align: center;
+    font-size: 25px;
+}
+#underline{
+    width: 400px;
+    height: 1px;
+    background-color: rgb(222, 222, 222);
+    
+}
+
+#postdata div{
+    background-color: rgb(255, 255, 255);
+    justify-content: center;
+    padding: 3vh 0vw;
+    display: grid;
+    margin: 2px;
+
+    grid-template-columns: repeat(2,.1fr);
+}
+.mainpost{
+    border-radius: 5%;
+    border: 1px solid black;
+}
+#createpostbody{
+    background-color: rgb(248, 241, 241);
+    border-radius: 7px;
+    border: 1px solid black;
+    align-items: center;
+    align-content: center;
+    position: fixed;
+    bottom: 25vh; 
+    opacity: 95%;
+    width: 400px;
+    margin: auto;
+    display: none;
+    
+}
+
+
+#createpost{
+   
+    display: flex;
+    justify-content: center;
+    flex-direction: column;
+    margin: 1vh 1vw;
+}
+#createpost span{
+    padding: 1vh 0vw;
+    font-size: 17px;
+    font-weight: 500;
+
+}
+
+#caption{
+    outline: none;
+    border-radius: 7px;
+    border: 1px solid;
+    padding: 1vh 1vw;
+
+}
+#createpost button{
+    background-color: rgb(41, 92, 187);
+    color: white;
+    cursor: pointer;
+    border-radius: 7px;
+    outline: none;
+    font-size: 16px;
+    border: none;
+    padding: 1vh 2vw;
+}
+#photo{
+    background-color: rgb(41, 92, 187);
+    color: white;
+    cursor: pointer;
+    border-radius: 7px;
+    outline: none;
+    border: none;
+    padding: 4px 2px;
+}
+#discardpost{
+    background-color: rgb(41, 92, 187);
+    color: white;
+    cursor: pointer;
+    border-radius: 7px;
+    outline: none;
+    font-size: 16px;
+    border: none;
+    padding: 1vh 1vw;
+    margin: 1vh 0vw;
+}
+#createandlogoutbody{
+    background-color: whitesmoke;
+    display: flex;
+    position: sticky;
+    bottom: 0;
+    /* left: 34.8vw; */
+    flex-direction: column;
+    width: 400px;
+    margin: auto;
+    justify-content: center;
+    /* padding-bottom: 0; */
+}
+
+#createandlogout{
+    margin-top: 10px;
+    padding: 1vh 0vw;
+    display: flex;
+    justify-content: space-around;
+}
+#createandlogout i{
+    cursor: pointer;
+    font-size: 22px;
+}
+#createandlogout img{
+    border-radius: 50%;
+}
